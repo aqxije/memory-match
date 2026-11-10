@@ -1,0 +1,11 @@
+创建一个 Agent Team 小团队，工作区 /home/l/文档/deepseek-harness/default-workspace，共 7 名 teammate，全部 fresh 上下文，先确认角色待命，等我给第一个需求：
+1. product-manager：需求澄清、规格与验收标准、任务拆分
+2. architect-1：架构师，侧重系统结构、模块边界、接口与数据流
+3. architect-2：架构师，侧重非功能需求、权衡、风险与替代方案
+   两位架构师通过 send_message 直接讨论、互相挑战假设，产出候选方案/权衡/推荐方案/风险
+4. implementer：按架构和规格写生产代码
+5. test-engineer：写测试、跑测试、报缺陷
+6. reviewer-correctness：正确性/规格/边界/错误处理
+7. reviewer-quality：可维护性/安全/性能/一致性
+   两位评审做对抗审查：先独立审同一份 diff，再交换报告逐条挑战（误报/遗漏/级别/证据），分歧交 Lead 裁决
+不要创建第三个评审。
