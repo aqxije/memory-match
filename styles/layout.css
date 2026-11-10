@@ -1,0 +1,152 @@
+/* MM · 布局 / 响应式 / 安全区（render.md §4） */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.app {
+  /* 固定为「视口减去安全区」，避免内容把页面撑出纵向滚动条（Q-04） */
+  height: 100vh;
+  height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app__main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 屏幕：同一时刻只显示一个（暂停/结算/排行榜为覆盖层） */
+.screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(6px, 1.5vmin, 16px);
+}
+
+.screen--menu {
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  overflow-y: auto;
+}
+
+.screen--game {
+  gap: var(--sp-2);
+  overflow: hidden;
+}
+
+.screen--overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  background: rgba(255, 247, 240, 0.86);
+  overflow-y: auto;
+}
+
+/* 游戏页三段：HUD / 棋盘 / 底部按钮 */
+.hud {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border-radius: var(--radius-btn);
+  box-shadow: var(--shadow-card);
+}
+
+.hud__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  font-size: 1rem;
+}
+
+.board-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+/* 需要滚动时（如横屏 640×360）改为顶部对齐，避免 flex 居中导致顶部内容不可达（T15 视觉审计） */
+body.needs-scroll .board-wrap {
+  align-items: flex-start;
+}
+
+.board {
+  --cols: 4;
+  --card-size: 64px;
+  --gap: 8px;
+  --fs-emoji: calc(var(--card-size) * 0.55);
+  --fs-card-name: calc(var(--card-size) * 0.16);
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--card-size));
+  grid-auto-rows: var(--card-size);
+  gap: var(--gap);
+  justify-content: center;
+  align-content: center;
+  margin: 0 auto;
+  padding: 2px;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game-foot {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: var(--sp-1) 0;
+}
+
+.game-foot .btn {
+  gap: 4px;
+  padding: 10px 8px;
+}
+
+/* 横屏 / 矮屏：压缩 HUD 与底部，给棋盘让高度 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .hud { flex-direction: row; flex-wrap: wrap; gap: 2px var(--sp-3); padding: 4px var(--sp-2); }
+  .hud__row { gap: 2px var(--sp-2); font-size: 1rem; }
+  .game-foot { gap: var(--sp-1); }
+  .game-foot .btn { padding: 6px 10px; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --ink-soft: #3D3A4B; }
+  .card__face { border: 2px solid var(--ink); }
+}

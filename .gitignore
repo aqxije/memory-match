@@ -1,0 +1,8 @@
+# 本仓库为精简版：完整交付文档与评审证据不纳入
+docs/
+reviews/
+
+# OS / 编辑器临时文件
+.DS_Store
+Thumbs.db
+*.log

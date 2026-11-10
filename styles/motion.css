@@ -1,0 +1,67 @@
+/* MM · 动效（只动 transform/opacity；无循环动画；reduced-motion 全降级） */
+
+/* 翻牌过渡在 components.css 的 .card__inner 上（280ms） */
+
+/* 配对成功：缩放 + 描边（600ms） */
+.card.is-matched { animation: mm-pop 600ms var(--ease-out); }
+@keyframes mm-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* 错配：±4px ×2，220ms（不奖励错误，仅温和提示） */
+.card.is-shake { animation: mm-shake 220ms ease-in-out; }
+@keyframes mm-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* 结算星星逐颗点亮（间隔 120ms，总 ≤1.2s） */
+.star.is-on { animation: mm-star 420ms var(--ease-out) both; }
+.star.is-on:nth-child(2) { animation-delay: 120ms; }
+.star.is-on:nth-child(3) { animation-delay: 240ms; }
+@keyframes mm-star {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* 连击提示上浮 */
+.hud__combo.is-hot { animation: mm-combo 700ms var(--ease-out); }
+@keyframes mm-combo {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+/* 覆盖层淡入 */
+.screen--overlay:not([hidden]) .panel { animation: mm-fade 180ms ease; }
+@keyframes mm-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 3D 不可用时的回退：交叉淡化 */
+@supports not (transform-style: preserve-3d) {
+  .card__inner { transform-style: flat; transition: none; }
+  .card__face { backface-visibility: visible; -webkit-backface-visibility: visible; }
+  .card__face--front { transform: none; opacity: 0; transition: opacity var(--dur-fast) linear; }
+  .card.is-face-up .card__inner { transform: none; }
+  .card.is-face-up .card__face--front { opacity: 1; }
+  .card.is-face-up .card__face--back { opacity: 0; }
+}
+
+/* 减少动效：关闭粒子/抖动/缩放/星星弹出，翻牌即时，功能与计时不变（AC-45） */
+@media (prefers-reduced-motion: reduce) {
+  .card__inner { transition: none; }
+  .card.is-shake,
+  .card.is-matched,
+  .star.is-on,
+  .hud__combo.is-hot,
+  .screen--overlay:not([hidden]) .panel { animation: none; }
+  .fx-p { display: none; }
+  .hint { transition: none; }
+  .btn, .diff { transition: none; }
+}
